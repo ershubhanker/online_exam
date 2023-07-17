@@ -1,0 +1,80 @@
+{% extends 'teacher/teacherbase.html' %}
+{% load widget_tweaks %}
+{% block content %}
+
+<h2 style="text-align:center;">Add Question</h2>
+<form method="POST" autocomplete="off" style="margin:100px;margin-top: 0px;">
+    {%csrf_token%}
+    <div class="form-group">
+        <label for="question">Course</label>
+      {% render_field questionForm.courseID|attr:'required:true' class="form-control form-control-sm rounded-0"  %}
+        
+        
+        <br>
+        <label for="qtype">Question Type</label>
+      {% render_field questionForm.qtype|attr:'required:true' class="form-control form-control-sm rounded-0" id="qtype-select" %}
+      <br>
+      <label for="question">Question</label>
+      {% render_field questionForm.question|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: What is the relation calculus?" %}
+        <br>
+      <label for="question_number">Marks</label>
+      {% render_field questionForm.marks|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: 5" %}
+        <br>
+  
+        <div class="option-fields">
+      <label for="option1" class="label">Option 1</label>
+      {% render_field questionForm.option1|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: It is a kind of procedural language" %}
+        <br>
+      <label for="option2" class="label">Option 2</label>
+      {% render_field questionForm.option2|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: It is a non-procedural language" %}
+        <br>
+      <label for="option3" class="label">Option 3</label>
+      {% render_field questionForm.option3|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: It is a high-level language" %}
+        <br>
+      <label for="option4" class="label">Option 4</label>
+      {% render_field questionForm.option4|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: It is Data Definition language" %}
+        <br>
+      <label for="answer" class="label">Correct Answer</label>
+      {% render_field questionForm.answer|attr:'required:true' class="form-control form-control-sm rounded-0 label" %}
+    </div>
+
+    {% comment %} <label for="blankans" class="blankans">Answer</label>
+      {% render_field questionForm.blankans|attr:'required:true' class="form-control form-control-sm rounded-0 blankans" placeholder="Example: Jupiter" %} {% endcomment %}
+  </div>
+    
+
+    <button type="submit" class="btn btn-success" style="border-radius: 0%;">Submit Question</button>
+  </form>
+<br><br><br>
+
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  {% comment %} <script>
+    $(document).ready(function () {
+        // Function to handle the change event of the qtype select
+        function handleQTypeChange() {
+            var selectedOption = $("#qtype-select").val();
+
+            // Hide all option fields by default
+            $(".option-fields input").hide();
+
+            if (selectedOption === "Fill in the blanks") {
+                // Show only the question field for "Fill in the blanks" option
+                $(".option-fields .label").hide();
+                $(".blankans").show()
+                $("#id_question").closest(".option-fields").find("input[type=text]").show();
+            } else if (selectedOption === "MCQ") {
+                // Show all option fields for "MCQ" option
+                $(".option-fields .label").show();
+                $(".option-fields input").show();
+                $(".blankans").hide()
+            }
+        }
+
+        // Trigger the change event handler on page load
+        handleQTypeChange();
+
+        // Bind the change event handler to the qtype select
+        $("#qtype-select").change(handleQTypeChange);
+    });
+</script>  {% endcomment %}
+{% endblock content %}
