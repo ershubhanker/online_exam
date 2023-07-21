@@ -42,13 +42,14 @@
         {% csrf_token %}
         <h2 style="text-align: center;">Course: {{course.course_name}}</h2>
         <div id="timer" style="text-align: center;"></div>
-                <audio controls>
-                    <source src="{% if course.audio %} {{ course.audio.url }}{% endif %}" type="{{ course.audio.content_type }}">
-                    Your browser does not support the audio element.
-                </audio>
-            
-
+                
         {% for q in questions%}
+        {% if q.audio %}
+        <audio controls>
+            <source src="{{ q.audio.url }}" type="{{ q.audio.content_type }}">
+            Your browser does not support the audio element.
+        </audio>
+    {% endif %}
         <div class="d-flex w-100 align-items-center">
             <div class="col-auto flex-shrink-1 flex-grow-1">
                 <h3 class="">{{ forloop.counter }}. {{q.question}}</h3>

@@ -18,7 +18,6 @@ class Course(models.Model):
    course_name = models.CharField(max_length=50)
    question_number = models.PositiveIntegerField()
    total_marks = models.PositiveIntegerField()
-   audio = models.FileField(upload_to=get_audio_upload_path, null=True, blank=True)
    timer = models.IntegerField(choices=TIMER_CHOICES, null=True, blank=True)
 
    def __str__(self):
@@ -36,7 +35,8 @@ class Question(models.Model):
     option4=models.CharField(max_length=200,null=True, blank=True)
     cat=(('Option1','Option1'),('Option2','Option2'),('Option3','Option3'),('Option4','Option4'))
     answer=models.CharField(max_length=200,choices=cat)
-    blankans = models.CharField(max_length=100, null=True, blank=True)
+    audio = models.FileField(upload_to=get_audio_upload_path, null=True, blank=True)
+
 
 class Result(models.Model):
     student = models.ForeignKey(Student,on_delete=models.CASCADE)

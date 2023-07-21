@@ -3,13 +3,15 @@
 {% block content %}
 
 <h2 style="text-align:center;">Add Question</h2>
-<form method="POST" autocomplete="off" style="margin:100px;margin-top: 0px;">
+<form method="POST" enctype="multipart/form-data" autocomplete="off" style="margin:100px;margin-top: 0px;">
     {%csrf_token%}
     <div class="form-group">
         <label for="question">Course</label>
-      {% render_field questionForm.courseID|attr:'required:true' class="form-control form-control-sm rounded-0"  %}
-        
-        
+      {% render_field questionForm.courseID|attr:'required:true' class="form-control form-control-sm rounded-0" %}
+        <br>
+      <label for="audio">Audio</label>
+      {% render_field questionForm.audio class="form-control form-control-sm rounded-0" %}
+      
         <br>
         <label for="qtype">Question Type</label>
       {% render_field questionForm.qtype|attr:'required:true' class="form-control form-control-sm rounded-0" id="qtype-select" %}
@@ -38,8 +40,6 @@
       {% render_field questionForm.answer|attr:'required:true' class="form-control form-control-sm rounded-0 label" %}
     </div>
 
-    {% comment %} <label for="blankans" class="blankans">Answer</label>
-      {% render_field questionForm.blankans|attr:'required:true' class="form-control form-control-sm rounded-0 blankans" placeholder="Example: Jupiter" %} {% endcomment %}
   </div>
     
 

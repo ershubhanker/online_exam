@@ -13,30 +13,14 @@ class TeacherSalaryForm(forms.Form):
 class CourseForm(forms.ModelForm):
     class Meta:
         model=models.Course
-        fields=['course_name','question_number','total_marks','audio','timer']
+        fields=['course_name','question_number','total_marks','timer']
 
 class QuestionForm(forms.ModelForm):
-    
-    # def __init__(self, *args, **kwargs):
-    #     super(QuestionForm, self).__init__(*args, **kwargs)
-    #     self.fields['answer'].required = False
-
-    # def clean(self):
-    #     cleaned_data = super().clean()
-    #     qtype = cleaned_data.get('qtype')
-
-    #     if qtype == 'Fill in the blanks':
-    #         answer = cleaned_data.get('answer')
-    #         if not answer:
-    #             self.add_error('answer', 'This field is required for "Fill in the blanks" questions.')
-    #         else:
-    #             cleaned_data['blankans'] = answer
-    #this will show dropdown __str__ method course model is shown on html so override it
-    #to_field_name this will fetch corresponding value  user_id present in course model and return it
     courseID=forms.ModelChoiceField(queryset=models.Course.objects.all(),empty_label="Course Name", to_field_name="id")
     class Meta:
         model=models.Question
-        fields=['marks','qtype','question','option1','option2','option3','option4','answer']
+        fields=['marks','qtype','question','option1','option2','option3','option4','answer','audio']
         widgets = {
             'question': forms.Textarea(attrs={'rows': 3, 'cols': 50})
         }
+

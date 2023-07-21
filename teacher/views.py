@@ -63,7 +63,7 @@ def teacher_exam_view(request):
 def teacher_add_exam_view(request):
     courseForm=QFORM.CourseForm()
     if request.method=='POST':
-        courseForm=QFORM.CourseForm(request.POST,request.FILES or None)
+        courseForm=QFORM.CourseForm(request.POST)
         if courseForm.is_valid():        
             courseForm.save()
         else:
@@ -93,7 +93,7 @@ def teacher_question_view(request):
 def teacher_add_question_view(request):
     questionForm=QFORM.QuestionForm()
     if request.method=='POST':
-        questionForm=QFORM.QuestionForm(request.POST)
+        questionForm=QFORM.QuestionForm(request.POST,request.FILES or None)
         if questionForm.is_valid():
             question=questionForm.save(commit=False)
             course=QMODEL.Course.objects.get(id=request.POST.get('courseID'))
