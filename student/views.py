@@ -100,8 +100,12 @@ def calculate_marks_view(request):
         result.student=student
         result.save()
 
-        return HttpResponseRedirect('view-result')
+        return HttpResponseRedirect('thankyou')
 
+@login_required(login_url='studentlogin')
+@user_passes_test(is_student)
+def thankyoupage(request):
+    return render(request,'student/thankyoupage.html')
 
 
 @login_required(login_url='studentlogin')
