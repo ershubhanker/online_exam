@@ -15,6 +15,9 @@
         <br>
         <label for="qtype">Question Type</label>
       {% render_field questionForm.qtype|attr:'required:true' class="form-control form-control-sm rounded-0" id="qtype-select" %}
+<br>
+      <label for="qtype">Question Tag</label>
+      {% render_field questionForm.qtag|attr:'required:true' class="form-control form-control-sm rounded-0" id="qtag-select" %}
       <br>
       <label for="question">Question</label>
       {% render_field questionForm.question|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: What is the relation calculus?" %}

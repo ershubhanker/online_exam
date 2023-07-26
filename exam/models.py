@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import os
 from django.utils import timezone
 
@@ -7,6 +9,7 @@ from student.models import Student
 def get_audio_upload_path(instance, filename):
     filename = timezone.now().strftime('%Y%m%d%H%M%S') + os.path.splitext(filename)[1]
     return os.path.join('audio/', filename)
+
 
 class Course(models.Model):
    TIMER_CHOICES = (
@@ -23,6 +26,9 @@ class Course(models.Model):
    def __str__(self):
         return self.course_name
 
+
+
+
 class Question(models.Model):
     course=models.ForeignKey(Course,on_delete=models.CASCADE)
     qt = (('Fill in the blanks','Fill in the blanks'),('MCQ','MCQ'))
@@ -36,6 +42,38 @@ class Question(models.Model):
     cat=(('Option1','Option1'),('Option2','Option2'),('Option3','Option3'),('Option4','Option4'))
     answer=models.CharField(max_length=200,choices=cat)
     audio = models.FileField(upload_to=get_audio_upload_path, null=True, blank=True)
+    tag = (('Decision-making','Decision-making'),('Emotional Intelligence','Emotional Intelligence'))
+    qtag = models.CharField(max_length=200,choices=tag,null=True,blank=True)
+
+    def __str__(self):
+        return f'{self.course.course_name} - {self.question}'
+
+
+class DecisionMakingQuestion(models.Model):
+    ques = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.ques.question}'
+
+class EmotionalIntelligenceQuestion(models.Model):
+    ques = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.ques.question}'
+    
+
+
+@receiver(post_save, sender=Question)
+def create_question_tags(sender, instance, created, **kwargs):
+    """
+    Signal receiver function to create corresponding tag models for a new question.
+    """
+    if created and instance.qtag == 'Decision-making':
+        DecisionMakingQuestion.objects.create(ques=instance)
+    elif created and instance.qtag == 'Emotional Intelligence':
+        EmotionalIntelligenceQuestion.objects.create(ques=instance)
+
+
 
 
 class Result(models.Model):
