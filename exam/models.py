@@ -42,7 +42,7 @@ class Question(models.Model):
     cat=(('Option1','Option1'),('Option2','Option2'),('Option3','Option3'),('Option4','Option4'))
     answer=models.CharField(max_length=200,choices=cat)
     audio = models.FileField(upload_to=get_audio_upload_path, null=True, blank=True)
-    tag = (('Decision-making','Decision-making'),('Emotional Intelligence','Emotional Intelligence'))
+    tag = (('Comprehension', 'Comprehension'),('Decision-making','Decision-making'),('Emotional Intelligence','Emotional Intelligence'))
     qtag = models.CharField(max_length=200,choices=tag,null=True,blank=True)
 
     def __str__(self):
@@ -61,6 +61,12 @@ class EmotionalIntelligenceQuestion(models.Model):
     def __str__(self):
         return f'{self.ques.question}'
     
+class ComprehensionQuestion(models.Model):
+    ques = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.ques.question}'
+    
 
 
 @receiver(post_save, sender=Question)
@@ -72,6 +78,8 @@ def create_question_tags(sender, instance, created, **kwargs):
         DecisionMakingQuestion.objects.create(ques=instance)
     elif created and instance.qtag == 'Emotional Intelligence':
         EmotionalIntelligenceQuestion.objects.create(ques=instance)
+    elif created and instance.qtag == 'Comprehension':
+        ComprehensionQuestion.objects.create(ques=instance)
 
 
 
@@ -79,6 +87,12 @@ def create_question_tags(sender, instance, created, **kwargs):
 class Result(models.Model):
     student = models.ForeignKey(Student,on_delete=models.CASCADE)
     exam = models.ForeignKey(Course,on_delete=models.CASCADE)
+    decision_making_marks = models.PositiveIntegerField(null=True, blank=True)
+    emotional_intelligence_marks = models.PositiveIntegerField(null=True, blank=True)
+    comprehension_marks = models.PositiveIntegerField(null=True, blank=True)
     marks = models.PositiveIntegerField()
+    time_taken_minutes = models.PositiveIntegerField(null=True, blank=True)  # New field to store time taken in minutes
+    predict_performance = models.TextField(null=True, blank=True)
+    predict_attrition = models.PositiveIntegerField(null=True, blank=True)
     date = models.DateTimeField(auto_now=True)
 

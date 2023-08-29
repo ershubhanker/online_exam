@@ -8,7 +8,10 @@ from django.conf import settings
 from datetime import date, timedelta
 from exam import models as QMODEL
 from teacher import models as TMODEL
-
+from datetime import datetime, timedelta
+import json
+import requests
+from django.http import JsonResponse
 
 #for showing signup/login button for student
 def studentclick_view(request):
@@ -73,6 +76,9 @@ def start_exam_view(request,pk):
     questions=QMODEL.Question.objects.all().filter(course=course)
     if request.method=='POST':
         pass
+    else:
+        start_time = datetime.now()
+        request.session['start_time'] = start_time.isoformat()  # Convert datetime to ISO 8601 format
     response= render(request,'student/start_exam.html',{'course':course,'questions':questions})
     response.set_cookie('course_id',course.id)
     return response
@@ -84,18 +90,56 @@ def calculate_marks_view(request):
     if request.COOKIES.get('course_id') is not None:
         course_id = request.COOKIES.get('course_id')
         course=QMODEL.Course.objects.get(id=course_id)
+        start_time_iso = request.session.get('start_time')
+        start_time = datetime.fromisoformat(start_time_iso)
+        end_time = datetime.now()
+        time_taken = (end_time - start_time).seconds // 60
         
         total_marks=0
+        dm_marks = 0
+        ei_marks = 0
+        c_marks = 0
         questions=QMODEL.Question.objects.all().filter(course=course)
-        for i in range(len(questions)):
-            
+        for i, question in enumerate(questions):
+
             selected_ans = request.COOKIES.get(str(i+1))
             actual_answer = questions[i].answer
             if selected_ans == actual_answer:
                 total_marks = total_marks + questions[i].marks
+            if question.qtag == 'Decision-making' and selected_ans == actual_answer:
+                dm_marks += question.marks
+            elif question.qtag == 'Emotional Intelligence' and selected_ans == actual_answer:
+                ei_marks += question.marks
+            elif question.qtag == 'Comprehension' and selected_ans == actual_answer:
+                c_marks += question.marks
+
+        # Create a dictionary with the results to send to the API
+        api_data = {
+            "Comprehension": c_marks,
+            "Decision Making": dm_marks,
+            "Emotional Intelligence": ei_marks,
+            "Time": time_taken
+        }
+
+        # Send API request for predicted performance
+        performance_response = requests.post('http://127.0.0.1:5000/predict_performance', json=api_data)
+        performance_data = performance_response.json()
+        predicted_performance = performance_data.get('predictions', [''])[0]
+
+        # Send API request for predicted attrition
+        attrition_response = requests.post('http://127.0.0.1:5000/predict_attrition', json=api_data)
+        attrition_data = attrition_response.json()
+        predicted_attrition = int(attrition_data.get('predictions', [0])[0])
+
         student = models.Student.objects.get(user_id=request.user.id)
         result = QMODEL.Result()
         result.marks=total_marks
+        result.decision_making_marks = dm_marks
+        result.emotional_intelligence_marks = ei_marks
+        result.comprehension_marks = c_marks
+        result.time_taken_minutes = time_taken
+        result.predict_performance = predicted_performance
+        result.predict_attrition = predicted_attrition
         result.exam=course
         result.student=student
         result.save()
