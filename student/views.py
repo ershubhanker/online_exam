@@ -131,9 +131,6 @@ def calculate_marks_view(request):
         attrition_data = attrition_response.json()
         predicted_attrition = int(attrition_data.get('predictions', [0])[0])
 
-        print("performance", predicted_performance)
-        print("attrition", predicted_attrition)
-
         student = models.Student.objects.get(user_id=request.user.id)
         result = QMODEL.Result()
         result.marks=total_marks
